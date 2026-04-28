@@ -58,6 +58,11 @@ class PlaybackService : MediaSessionService() {
                 shuffleModeEnabled = true
                 repeatMode = Player.REPEAT_MODE_ALL
             }
+        player.addListener(object : Player.Listener {
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                NowPlaying.set(mediaItem?.mediaId?.takeIf { it.isNotEmpty() })
+            }
+        })
         session = MediaSession.Builder(this, player).build()
         loadPlaylist()
         startReconciler()
@@ -131,9 +136,12 @@ class PlaybackService : MediaSessionService() {
         val wasPlaying = player.isPlaying
         if (files.isEmpty()) {
             player.clearMediaItems()
+            NowPlaying.set(null)
             return
         }
-        val items = files.shuffled().map { MediaItem.fromUri(it.toUri()) }
+        val items = files.shuffled().map {
+            MediaItem.Builder().setUri(it.toUri()).setMediaId(it.name).build()
+        }
         player.setMediaItems(items)
         player.prepare()
         if (wasPlaying) player.play()

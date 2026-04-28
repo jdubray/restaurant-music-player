@@ -54,9 +54,11 @@ import app.musicplayer.restaurant.data.HoursConfig
 import app.musicplayer.restaurant.data.Settings
 import app.musicplayer.restaurant.data.UserOverride
 import app.musicplayer.restaurant.playback.HoursLogic
+import app.musicplayer.restaurant.playback.NowPlaying
 import app.musicplayer.restaurant.sync.SyncWorker
 import app.musicplayer.restaurant.sync.Syncer
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
@@ -120,6 +122,8 @@ class MainViewModel(app: android.app.Application) : AndroidViewModel(app) {
     private val settings = Settings(app)
     private val json = Json { ignoreUnknownKeys = true }
 
+    val trackName: StateFlow<String?> = NowPlaying.trackName
+
     val uiState = combine(
         settings.serverUrl,
         settings.userOverride,
@@ -182,6 +186,7 @@ class MainViewModel(app: android.app.Application) : AndroidViewModel(app) {
 @Composable
 fun MainScreen(viewModel: MainViewModel, onRequestBatteryUnoptimized: () -> Unit) {
     val state by viewModel.uiState.collectAsState()
+    val trackName by viewModel.trackName.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -195,6 +200,9 @@ fun MainScreen(viewModel: MainViewModel, onRequestBatteryUnoptimized: () -> Unit
         Card(colors = CardDefaults.cardColors()) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(state.statusText, style = MaterialTheme.typography.titleLarge)
+                if (state.isPlaying && trackName != null) {
+                    Text("Now: $trackName", style = MaterialTheme.typography.bodyMedium)
+                }
                 Text("Today: ${state.todayHoursText}", color = Color(0xFFAAAAAA))
                 Text("${state.trackCount} tracks loaded", color = Color(0xFFAAAAAA))
             }
