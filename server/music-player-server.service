@@ -1,0 +1,29 @@
+[Unit]
+Description=Restaurant music player LAN server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=baanbaan
+Group=baanbaan
+WorkingDirectory=/opt/music-player
+ExecStart=/opt/music-player/venv/bin/gunicorn \
+    --bind 0.0.0.0:8080 \
+    --workers 2 \
+    --threads 4 \
+    --access-logfile - \
+    --error-logfile - \
+    server:app
+Restart=on-failure
+RestartSec=3
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/opt/music-player
+
+[Install]
+WantedBy=multi-user.target

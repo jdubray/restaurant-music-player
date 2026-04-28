@@ -1,0 +1,13 @@
+{
+  "timezone": "America/Los_Angeles",
+  "enabled": true,
+  "schedule": {
+    "mon": { "start": "11:00", "end": "22:00" },
+    "tue": { "start": "11:00", "end": "22:00" },
+    "wed": { "start": "11:00", "end": "22:00" },
+    "thu": { "start": "11:00", "end": "22:00" },
+    "fri": { "start": "11:00", "end": "23:00" },
+    "sat": { "start": "11:00", "end": "23:00" },
+    "sun": null
+  }
+}

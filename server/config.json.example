@@ -1,0 +1,4 @@
+{
+  "music_dir": "/opt/music-player/music",
+  "port": 8080
+}
